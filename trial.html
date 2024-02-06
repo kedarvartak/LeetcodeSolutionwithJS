@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
+    <script>
+        const apiUrl = "https://api.openai.com/v1/chat/completions"
+        const apiKey = "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"; // add your own key here
+
+        async function postData(){
+            const message = document.getElementById('message').value.trim();
+            console.log(message);
+
+            if (apiKey === "") {
+                console.log("You forgot to add your own key!");
+                return;
+            } 
+             
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    "model": "gpt-3.5-turbo",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": `Write a JavaScript code for this question: ${message}`
+                        }
+                    ]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                console.log("DONE");
+
+                // Check if the response structure is as expected
+                if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
+                    const responseText = data.choices[0].message.content.trim();
+                    const card = document.createElement('pre');
+                    card.innerHTML = responseText;
+                    document.getElementById('chat-area').appendChild(card);
+                } else {
+                    console.log("Unexpected response structure:", data);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    </script>
+    <style>
+      .dark{
+            background-color: #1a1a1a;
+            color: #FFF;
+        }
+        .card{
+            background-color: #8a8a8a;
+            color: #FFF;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input {
+            margin: 0 auto;
+            margin-top: 30px;
+            height: 200px;
+            width: 80%;
+            display: block;
+        }
+
+        .startingtext{
+        font-family: 'Poppins', sans-serif;
+        font-size: 60px;
+        text-align: center;
+    
+       }
+
+        .midtext{
+           font-family: 'Poppins', sans-serif;
+           font-size: 20px;
+           position: relative;
+           left: 41%;
+        }
+
+        .button{
+            font-size: 20px;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            outline: none;
+            border-radius: 5px;
+            margin-left: 46%;
+            margin-top: 2%;
+
+        }
+
+        
+
+
+    </style>
+</head>
+<body class="dark">
+    <h1 class="startingtext" >Get any Leetcode solution in JavaScript </h1>
+    <form>
+        <label class="midtext" for="message">Enter your code statement: </label>
+        <textarea class="input" id="message" cols="30" rows="10"></textarea>
+        <button class="button" type="button" onclick="postData()">Send me</button>
+        <div class="output" id="chat-area"></div>
+    </form>
+</body>
+</html>
+
+
+
+
+
